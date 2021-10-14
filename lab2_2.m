@@ -99,7 +99,7 @@ plot(armdata(:,1),armdata(:,2),'m');
 %}
 
 
-%{
+%
 load census
 s = fitoptions('Method','NonlinearLeastSquares',...
 'Lower',[0,0],...
@@ -125,6 +125,7 @@ hold on;
 plot(x_values,y2_values,'m--');
 %}
 
+%{
 df_more = length(pop) - 4; % let df be number of data points - number parameters
 df_less = length(pop) - 2; % same
 SSE_moreP = gof2.sse;
@@ -133,3 +134,4 @@ changeinerror = ((SSE_lessP - SSE_moreP)/SSE_moreP);
 changeindegreesoffreedom = ((df_less-df_more)/df_more);
 F = changeinerror / changeindegreesoffreedom;
 P_nestedF = 1-fcdf(F,df_less-df_more,df_more),
+%}
