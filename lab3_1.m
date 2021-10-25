@@ -110,4 +110,4 @@ figure;
 plot(spike_times(2:end),60*spike_instantaneous_rates);
 ylabel('Instantaneous heart rate');
 xlabel('Time(s)');
-}
+%}
