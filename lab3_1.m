@@ -1,4 +1,4 @@
-load temperatures
+% load temperatures
 
 %{
 figure(100);
@@ -79,7 +79,7 @@ ylabel('Correlation coefficient');
 title('Correlogram: Blue Hills * McMurdo');
 %}
 
-%{
+%
 ecg = load('normalecg.txt');
 figure;
 plot(ecg)

@@ -25,7 +25,8 @@ S = 0*t; % start off with all 0's
 ind1 = find(t==3);
 ind2 = find(t==5);
 S(ind1:ind2) = 1;
-%
+[an,bn,fn] = fourier_coefficients(t,S);
+%{
 figure(100);
 plot(t,S);
 xlabel('Time(s)');
@@ -52,6 +53,7 @@ plot(t,f1+f2+f3+f4+f5+f6,'m-');
 plot(t,f1+f2+f3+f4+f5+f6+f7+f8+f9,'k-');
 %}
 
+%{
 sample_interval = t(2) - t(1);
 sample_rate = 1/sample_interval;
 N = length(t);
@@ -69,3 +71,81 @@ a1 = mean(S.*cos(2*pi*f1*t))
 S_reconstructed = an*cos(2*pi*fn'*t)+bn*sin(2*pi*fn'*t);
 figure(100);
 plot(t,S_reconstructed,'r--');
+%}
+
+%{
+P = an.^2 + bn.^2;
+figure;
+plot(fn,P,'o');
+xlabel('Frequency (Hz)');
+ylabel('Power');
+%}
+
+%{
+ecg = load('normalecg.txt');
+SR = 128;
+te = [0:1/SR:(length(ecg)-1)/SR];
+figure(102);
+plot(te,ecg)
+xlabel('Time (s)');
+ylabel('Voltage (mV)');
+%}
+
+%
+load temperatures.mat
+BlueHillsc = BlueHills(1:500,:);
+[an_t, bn_t, fn_t] = fourier_coefficients(BlueHillsc(:,1), BlueHillsc(:,2));
+%{
+figure;
+subplot(2,1,1);
+plot(BlueHillsc(:,1),BlueHillsc(:,2),'b');
+xlabel('Time(years)');
+ylabel('Temperature');
+subplot(2,1,2);
+plot(fn_t,an_t.^2+bn_t.^2)
+ylabel('Power (C^2)');
+xlabel('Frequency (cycles/year)');
+%}
+
+%{
+BHp = an_t.^2+bn_t.^2;
+inds = find(BHp>10);
+fn_t(inds)
+figure;
+plot(BlueHillsc(:,1),cos(2*pi*fn_t(inds(2))*BlueHillsc(:,1)),'r');
+hold on
+plot(BlueHillsc(:,1),cos(2*pi*fn_t(inds(3))*BlueHillsc(:,1)),'b');
+xlabel('Time(s)');
+ylabel('Cos at 2 frequencies');
+
+t_ = [ 0 1/12 2/12];
+cos_input1 = 2*pi*fn_t(inds(2))*t_;
+cos_input2 = 2*pi*fn_t(inds(3))*t_;
+figure;
+t__ = -2*pi:0.01:6*pi;
+plot(t__,cos(t__),'b');
+for i=1:length(t_)
+    text(cos_input1(i),cos(cos_input1(i)),int2str(i),'color',[0 0 1]);
+    text(cos_input2(i),cos(cos_input2(i)),int2str(i),'color',[1 0 0]);
+end
+SR=12;
+N = 500;
+m = 208;
+SR*(N/2+m)/N;
+SR*(N/2-m)/N;
+%}
+
+%
+[wave,fs] = audioread('song.wav');
+t_w = 0:1/fs:(length(wave)-1)/fs;
+[an_w, bn_w, fn_w] = fourier_coefficients(t_w,wave);
+p_w = an_w.^2 + bn_w.^2;
+figure
+plot(fn_w,p_w)
+box off;
+ylabel('Power');
+xlabel('Frequency');
+figure;
+%{
+spectrogram(wave,256,[],[],fs,'yaxis');
+%}
